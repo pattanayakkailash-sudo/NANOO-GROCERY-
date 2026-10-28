@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nanoo Grocery</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7f2;color:#222}
+header{background:#138b45;color:white;padding:20px 15px}
+header h1{margin:0 0 8px}
+header p{margin:0}
+.container{padding:15px;max-width:650px;margin:auto}
+input,button{font-size:16px}
+#search{width:100%;padding:13px;border:1px solid #ccc;border-radius:9px;margin-bottom:15px}
+h2{color:#138b45}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:white;padding:14px;border-radius:12px;box-shadow:0 2px 6px #ddd}
+.pic{font-size:42px;text-align:center}
+.card h3{margin:8px 0}
+.price{font-weight:bold;color:#138b45;margin:10px 0}
+button{border:0;border-radius:8px;padding:10px;background:#138b45;color:white;cursor:pointer}
+.cart{background:white;margin-top:20px;padding:15px;border-radius:12px}
+.row{display:flex;justify-content:space-between;gap:8px;margin:12px 0}
+.remove{background:#c0392b;padding:5px 9px}
+.order{width:100%;background:#087d45;padding:14px;margin-top:10px}
+footer{text-align:center;padding:20px;color:#555}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛒 Nanoo Grocery</h1>
+  <p>Fresh Grocery at Your Doorstep</p>
+  <p>📍 Kendrapara, Odisha</p>
+</header>
+
+<div class="container">
+  <input id="search" placeholder="🔍 Search grocery items..."
+  oninput="showProducts()">
+
+  <h2>Our Products</h2>
+  <div class="products" id="products"></div>
+
+  <div class="cart">
+    <h2>🛍️ Your Cart</h2>
+    <div id="items">Your cart is empty.</div>
+    <h3>Total: ₹<span id="total">0</span></h3>
+    <button class="order" onclick="checkout()">
+      Order on WhatsApp
+    </button>
+  </div>
+</div>
+
+<footer>© Nanoo Grocery | Kendrapara, Odisha</footer>
+
+<script>
+const goods=[
+ {name:"Rice",price:50,unit:"per kg",icon:"🍚"},
+ {name:"Potato",price:25,unit:"per kg",icon:"🥔"},
+ {name:"Onion",price:35,unit:"per kg",icon:"🧅"},
+ {name:"Tomato",price:30,unit:"per kg",icon:"🍅"},
+ {name:"Milk",price:30,unit:"per pack",icon:"🥛"},
+ {name:"Bread",price:35,unit:"per pack",icon:"🍞"},
+ {name:"Cooking Oil",price:150,unit:"per litre",icon:"🫗"},
+ {name:"Sugar",price:45,unit:"per kg",icon:"🧂"}
+];
+let cart={};
+
+function showProducts(){
+ const q=document.getElementById("search").value.toLowerCase();
+ document.getElementById("products").innerHTML=
+ goods.filter(p=>p.name.toLowerCase().includes(q))
+ .map(p=>`<div class="card">
+ <div class="pic">${p.icon}</div>
+ <h3>${p.name}</h3>
+ <div class="price">₹${p.price} ${p.unit}</div>
+ <button onclick="add('${p.name}')">Add to Cart +</button>
+ </div>`).join("");
+}
+function add(name){
+ cart[name]=(cart[name]||0)+1;
+ showCart();
+}
+function change(name,n){
+ cart[name]+=n;
+ if(cart[name]<=0)delete cart[name];
+ showCart();
+}
+function showCart(){
+ let total=0;
+ const keys=Object.keys(cart);
+ document.getElementById("items").innerHTML=keys.length?
+ keys.map(name=>{
+ const p=goods.find(x=>x.name===name);
+ total+=p.price*cart[name];
+ return `<div class="row">
+ <span>${p.name}<br>₹${p.price*cart[name]}</span>
+ <span>
+ <button onclick="change('${name}',-1)">−</button>
+ ${cart[name]}
+ <button onclick="change('${name}',1)">+</button>
+ </span></div>`;
+ }).join(""):"Your cart is empty.";
+ document.getElementById("total").textContent=total;
+}
+function checkout(){
+ if(!Object.keys(cart).length){
+ alert("Please add products to your cart.");
+ return;
+ }
+ let msg="Hello Nanoo Grocery! I want to order:\n";
+ let total=0;
+ for(const name in cart){
+ const p=goods.find(x=>x.name===name);
+ msg+=`${name} x ${cart[name]} = Rs.${p.price*cart[name]}\n`;
+ total+=p.price*cart[name];
+ }
+ msg+=`Total: Rs.${total}`;
+ // Replace 91XXXXXXXXXX with your WhatsApp number.
+ const phone="91XXXXXXXXXX";
+ if(phone.includes("X")){
+ alert("App working! Add your WhatsApp number in the code to enable ordering.");
+ return;
+ }
+ window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(msg),"_blank");
+}
+showProducts();
+</script>
+</body>
+</html>
