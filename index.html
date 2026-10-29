@@ -115,25 +115,42 @@ function showCart(){
  document.getElementById("total").textContent=total;
 }
 function checkout(){
- if(!Object.keys(cart).length){
- alert("Please add products to your cart.");
- return;
- }
- let msg="Hello Nanoo Grocery! I want to order:\n";
- let total=0;
- for(const name in cart){
- const p=goods.find(x=>x.name===name);
- msg+=`${name} x ${cart[name]} = Rs.${p.price*cart[name]}\n`;
- total+=p.price*cart[name];
- }
- msg+=`Total: Rs.${total}`;
- // Replace 919938502649 with your WhatsApp number.
- const phone="919938502649";
- if(phone.includes("X")){
- alert("App working! Add your WhatsApp number in the code to enable ordering.");
- return;
- }
- window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(msg),"_blank");
+  if(!Object.keys(cart).length){
+    alert("Please add products to your cart.");
+    return;
+  }
+
+  const name = document.getElementById("customerName").value.trim();
+  const mobile = document.getElementById("customerPhone").value.trim();
+  const address = document.getElementById("customerAddress").value.trim();
+
+  if(!name || !mobile || !address){
+    alert("Please enter your name, mobile number and delivery address.");
+    return;
+  }
+
+  let msg = "Hello Nanoo Grocery! I want to order:\n";
+  msg += "Customer Name: " + name + "\n";
+  msg += "Mobile: " + mobile + "\n";
+  msg += "Delivery Address: " + address + "\n\n";
+
+  let total = 0;
+
+  for(const name in cart){
+    const p = goods.find(x => x.name === name);
+    msg += name + " x " + cart[name] +
+      " = Rs." + (p.price * cart[name]) + "\n";
+    total += p.price * cart[name];
+  }
+
+  msg += "\nTotal: Rs." + total;
+
+  const phone = "919938502649";
+
+  window.open(
+    "https://wa.me/" + phone + "?text=" + encodeURIComponent(msg),
+    "_blank"
+  );
 }
 showProducts();
 </script>
